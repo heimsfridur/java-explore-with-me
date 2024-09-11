@@ -1,4 +1,4 @@
-package hit.service;
+package ru.practicum.ewm.hit.service;
 
 import ru.practicum.EndpointHitDto;
 import ru.practicum.ViewStatsDto;

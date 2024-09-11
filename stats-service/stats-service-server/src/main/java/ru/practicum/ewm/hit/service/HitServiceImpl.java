@@ -1,8 +1,8 @@
-package hit.service;
+package ru.practicum.ewm.hit.service;
 
-import hit.Hit;
-import hit.HitMapper;
-import hit.HitRepository;
+import ru.practicum.ewm.hit.Hit;
+import ru.practicum.ewm.hit.HitMapper;
+import ru.practicum.ewm.hit.HitRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.EndpointHitDto;

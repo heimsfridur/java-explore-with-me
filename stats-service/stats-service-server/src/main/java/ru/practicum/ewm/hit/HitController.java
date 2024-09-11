@@ -1,6 +1,6 @@
-package hit;
+package ru.practicum.ewm.hit;
 
-import hit.service.HitService;
+import ru.practicum.ewm.hit.service.HitService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -17,7 +17,7 @@ public class HitController {
 
     private  final HitService hitService;
 
-    @PostMapping("/hit")
+    @PostMapping("/ru/practicum/ewm")
     @ResponseStatus(HttpStatus.CREATED)
     public void addHit(@RequestBody EndpointHitDto hitDto) {
         hitService.add(hitDto);

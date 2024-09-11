@@ -1,7 +1,6 @@
-package hit;
+package ru.practicum.ewm.hit;
 
 import ru.practicum.EndpointHitDto;
-import ru.practicum.ViewStatsDto;
 
 public class HitMapper {
     public static Hit toHit(EndpointHitDto endpointHitDto) {
