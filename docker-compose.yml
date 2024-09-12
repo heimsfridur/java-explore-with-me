@@ -4,6 +4,7 @@ services:
     container_name: stats-server
     ports:
       - "9090:9090"
+      - "5005:5005"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats-db
       - SPRING_DATASOURCE_USERNAME=username

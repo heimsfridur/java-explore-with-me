@@ -1,5 +1,6 @@
 package ru.practicum.ewm.hit;
 
+import lombok.extern.slf4j.Slf4j;
 import ru.practicum.ewm.hit.service.HitService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -11,15 +12,17 @@ import ru.practicum.ViewStatsDto;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class HitController {
 
     private  final HitService hitService;
 
-    @PostMapping("/ru/practicum/ewm")
+    @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
     public void addHit(@RequestBody EndpointHitDto hitDto) {
+        log.info("POST request to /hit endpoint.");
         hitService.add(hitDto);
     }
 
@@ -29,6 +32,7 @@ public class HitController {
                                   @RequestParam  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
                                   @RequestParam(required = false) List<String> uris,
                                   @RequestParam(required = false) Boolean unique) {
+        log.info("GET request to /stats endpoint.");
         return hitService.get(start, end, uris, unique);
     }
 }
