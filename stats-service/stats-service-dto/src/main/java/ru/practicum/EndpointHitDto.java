@@ -1,6 +1,7 @@
 package ru.practicum;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -14,6 +15,7 @@ public class EndpointHitDto {
     private String uri;
     private String ip;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
+//    @JsonDeserialize(using = CustomDateTimeDeserializer.class)
     private LocalDateTime timestamp;
 }

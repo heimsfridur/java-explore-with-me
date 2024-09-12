@@ -26,7 +26,7 @@ public class HitServiceImpl implements HitService {
     public List<ViewStatsDto> get(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
         List<Hit> hitList;
 
-        if (!unique) {
+        if (unique == null || !unique) {
             if (uris == null || uris.isEmpty()) {
                 // not unique ip, not specific uris
                 hitList = hitRepository.findAllByTimestampBetween(start, end);
