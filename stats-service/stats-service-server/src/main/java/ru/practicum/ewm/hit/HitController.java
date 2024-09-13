@@ -20,7 +20,6 @@ public class HitController {
 
     private final HitService hitService;
     private static final String patternString = "yyyy-MM-dd HH:mm:ss";
-//    public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(patternString);
 
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
@@ -31,13 +30,11 @@ public class HitController {
 
     @GetMapping("/stats")
     @ResponseStatus(HttpStatus.OK)
-    public List<ViewStatsDto> get(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
-                                  @RequestParam  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
+    public List<ViewStatsDto> get(@RequestParam("start") @DateTimeFormat(pattern = patternString) LocalDateTime start,
+                                  @RequestParam("end")  @DateTimeFormat(pattern = patternString) LocalDateTime end,
                                   @RequestParam(required = false) List<String> uris,
                                   @RequestParam(required = false) Boolean unique) {
         log.info("GET request to /stats endpoint.");
-//        LocalDateTime start = LocalDateTime.parse(startString, formatter);
-//        LocalDateTime end = LocalDateTime.parse(endString, formatter);
         return hitService.get(start, end, uris, unique);
     }
 }
