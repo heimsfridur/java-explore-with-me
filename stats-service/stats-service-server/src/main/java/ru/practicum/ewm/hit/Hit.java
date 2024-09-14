@@ -23,15 +23,19 @@ public class Hit {
     private int id;
 
     @NotBlank
+    @Column(name = "app")
     private String app;
 
     @NotBlank
+    @Column(name = "uri")
     private String uri;
 
     @NotBlank
+    @Column(name = "ip")
     private String ip;
 
     @NotNull
+    @Column(name = "timestamp", nullable = false)
     private LocalDateTime timestamp;
 }
 

@@ -1,5 +1,6 @@
 package ru.practicum.ewm.hit;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.practicum.ewm.hit.service.HitService;
@@ -10,7 +11,6 @@ import ru.practicum.EndpointHitDto;
 import ru.practicum.ViewStatsDto;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -20,10 +20,10 @@ public class HitController {
 
     private final HitService hitService;
     private static final String patternString = "yyyy-MM-dd HH:mm:ss";
-
+    
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addHit(@RequestBody EndpointHitDto hitDto) {
+    public void addHit(@Valid @RequestBody EndpointHitDto hitDto) {
         log.info("POST request to /hit endpoint.");
         hitService.add(hitDto);
     }
