@@ -15,9 +15,9 @@
     <modules>
         <module>stats-service</module>
 		<module>main-service</module>
-		<module>stats-service/stats-service-server</module>
-		<module>stats-service/stats-service-client</module>
-		<module>stats-service/stats-service-dto</module>
+<!--		<module>stats-service/stats-service-server</module>-->
+<!--		<module>stats-service/stats-service-client</module>-->
+<!--		<module>stats-service/stats-service-dto</module>-->
 	</modules>
 
     <groupId>ru.practicum</groupId>
@@ -32,6 +32,25 @@
 	</properties>
 
 	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>3.3.1</version>
+				<configuration>
+					<configLocation>checkstyle.xml</configLocation>
+					<includeTestSourceDirectory>true</includeTestSourceDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<phase>compile</phase>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 		<pluginManagement>
 			<plugins>
 				<plugin>

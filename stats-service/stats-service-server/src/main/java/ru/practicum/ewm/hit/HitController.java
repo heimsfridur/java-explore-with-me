@@ -20,7 +20,7 @@ public class HitController {
 
     private final HitService hitService;
     private static final String patternString = "yyyy-MM-dd HH:mm:ss";
-    
+
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
     public void addHit(@Valid @RequestBody EndpointHitDto hitDto) {

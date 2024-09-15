@@ -27,26 +27,26 @@ services:
       interval: 5s
       retries: 10
 
-#  ewm-service:
-#    build: main-service
-#    container_name: ewm-service
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      - ewm-db
-#      - stats-server
-#
-#  ewm-db:
-#    image: postgres:16.1
-#    container_name: ewm-db
-#    environment:
-#      POSTGRES_USER: username
-#      POSTGRES_PASSWORD: password
-#      POSTGRES_DB: ewm-db
-#    ports:
-#      - "5433:5432"
-#    healthcheck:
-#      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
-#      timeout: 5s
-#      interval: 5s
-#      retries: 10
+  ewm-service:
+    build: main-service
+    container_name: ewm-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - ewm-db
+      - stats-server
+
+  ewm-db:
+    image: postgres:16.1
+    container_name: ewm-db
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ewm-db
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
