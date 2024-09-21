@@ -37,7 +37,7 @@ public class Event {
     @Column(name = "created_on", nullable = false)
     private LocalDateTime createdOn;
 
-    @Column(nullable = false)
+    @Column(name = "description", nullable = false)
     private String description;
 
     @Column(name = "event_date", nullable = false)
@@ -48,7 +48,7 @@ public class Event {
     private User initiator;
 
     @ManyToOne
-    @Embedded
+    @JoinColumn(name = "location_id")
     private Location location;
 
     @Column(name = "paid", nullable = false)
