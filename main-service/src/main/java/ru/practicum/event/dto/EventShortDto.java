@@ -40,5 +40,5 @@ public class EventShortDto {
     @NotBlank(message = "Title is required")
     private String title;
 
-    private Long views;
+    private Integer views;
 }

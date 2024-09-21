@@ -19,7 +19,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
     @Override
     public CategoryDto create(NewCategoryDto newCategoryDto) {
-        Category savedCategory = categoryRepository.save(CategoryMapper.toCategory(newCategoryDto));
+        Category savedCategory = categoryRepository.save(CategoryMapper.toCategoryFromNewCategoryDto(newCategoryDto));
         return CategoryMapper.toCategoryDto(savedCategory);
     }
 

@@ -1,0 +1,179 @@
+package ru.practicum.event.service;
+
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import ru.practicum.category.dto.CategoryDto;
+import ru.practicum.category.mapper.CategoryMapper;
+import ru.practicum.event.dto.EventFullDto;
+import ru.practicum.event.dto.EventShortDto;
+import ru.practicum.event.dto.NewEventDto;
+import ru.practicum.event.dto.UpdateEventUserRequest;
+import ru.practicum.event.mapper.EventMapper;
+import ru.practicum.event.model.Event;
+import ru.practicum.event.model.EventState;
+import ru.practicum.event.model.UserEventStateAction;
+import ru.practicum.event.repository.EventRepository;
+import ru.practicum.exceptions.ConflictException;
+import ru.practicum.exceptions.NotFoundException;
+import ru.practicum.location.dto.LocationDto;
+import ru.practicum.location.mapper.LocationMapper;
+import ru.practicum.request.dto.ParticipationRequestDto;
+import ru.practicum.user.repository.UserRepository;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+@AllArgsConstructor
+public class PrivateEventServiceImpl implements PrivateEventService {
+    private final UserRepository userRepository;
+    private final EventRepository eventRepository;
+
+    @Override
+    public List<EventShortDto> getAllByUserId(int userId, int from, int size) {
+        validateUserById(userId);
+
+        Pageable pageable = PageRequest.of(from / size, size);
+
+        List<Event> events = eventRepository.findAllByInitiatorId(userId, pageable);
+
+        return events.stream().map(EventMapper::toEventShortDto).toList();
+    }
+
+    @Override
+    public EventFullDto create(int userId, NewEventDto newEventDto) {
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        validateUserById(userId);
+        validateNewEventDate(newEventDto.getEventDate());
+
+        Event event = EventMapper.toEventFromNewEventDto(newEventDto);
+        event.setCreatedOn(currentTime);
+        event.setConfirmedRequests(0);
+        event.setViews(0);
+        event.setInitiator(userRepository.findById(userId).get());
+        event.setState(EventState.PENDING);
+
+        return EventMapper.toEventFullDto(eventRepository.save(event));
+    }
+
+    @Override
+    public EventFullDto getByIdByInitiator(int userId, int eventId) {
+        validateUserById(userId);
+        validateEventById(eventId);
+        Event event = eventRepository.findByIdAndInitiatorId(eventId, userId);
+        if (!event.getInitiator().getId().equals(userId)){
+            throw new ConflictException(String.format("User with id %d is not initiator of event with id %d", userId, eventId));
+        }
+
+        return EventMapper.toEventFullDto(event);
+    }
+
+    @Override
+    public EventFullDto updateEventByUser(int userId, int eventId, UpdateEventUserRequest updateEventUserRequest) {
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        validateUserById(userId);
+        validateEventById(eventId);
+
+        Event oldEvent = eventRepository.findById(eventId).get();
+
+        if (!oldEvent.getInitiator().getId().equals(userId)){
+            throw new ConflictException(String.format("User with id %d is not initiator of event with id %d", userId, eventId));
+        }
+
+        if (oldEvent.getState().equals(EventState.PUBLISHED)) {
+            throw new ConflictException("Only PENDING or CANCELED events could be updated.");
+        }
+
+        LocalDateTime newEventDate = updateEventUserRequest.getEventDate();
+        if (newEventDate != null) {
+            validateNewEventDate(newEventDate);
+            oldEvent.setEventDate(newEventDate);
+        }
+
+        String newAnnotation = updateEventUserRequest.getAnnotation();
+        if (newAnnotation != null) {
+            oldEvent.setAnnotation(newAnnotation);
+        }
+
+        CategoryDto newCategoryDto = updateEventUserRequest.getCategory();
+        if (newCategoryDto != null) {
+            oldEvent.setCategory(CategoryMapper.toCategoryFromCategoryDto(newCategoryDto));
+        }
+
+        String newDescription = updateEventUserRequest.getDescription();
+        if (newDescription != null) {
+            oldEvent.setDescription(newDescription);
+        }
+
+        LocationDto newLocation = updateEventUserRequest.getLocation();
+        if (newLocation != null) {
+            oldEvent.setLocation(LocationMapper.toLocation(newLocation));
+        }
+
+        Boolean newPaid = updateEventUserRequest.getPaid();
+        if (newPaid != null) {
+            oldEvent.setPaid(newPaid);
+        }
+
+        Integer newParticipantLimit = updateEventUserRequest.getParticipantLimit();
+        if (newParticipantLimit != null) {
+            oldEvent.setParticipantLimit(newParticipantLimit);
+        }
+
+        Boolean newRequestModeration = updateEventUserRequest.getRequestModeration();
+        if (newRequestModeration != null) {
+            oldEvent.setRequestModeration(newRequestModeration);
+        }
+
+        String newTitle = updateEventUserRequest.getTitle();
+        if (newTitle != null) {
+            oldEvent.setTitle(newTitle);
+        }
+
+        UserEventStateAction newStateAction = updateEventUserRequest.getStateAction();
+        if (newStateAction != null) {
+            if (newStateAction.equals(UserEventStateAction.SEND_TO_REVIEW)) {
+                oldEvent.setState(EventState.PENDING);
+            } else if (newStateAction.equals(UserEventStateAction.CANCEL_REVIEW)) {
+                oldEvent.setState(EventState.CANCELED);
+            }
+        }
+
+        return EventMapper.toEventFullDto(eventRepository.save(oldEvent));
+
+
+    }
+
+    @Override
+    public List<ParticipationRequestDto> getRequestsToEventByUser(int userId, int eventId) {
+
+    }
+
+
+    private void validateUserById(int id) {
+        if (!userRepository.existsById(id)) {
+            throw new NotFoundException(String.format("User with id %d is not found.", id));
+        }
+    }
+
+    private void validateEventById(int id) {
+        if (!eventRepository.existsById(id)) {
+            throw new NotFoundException(String.format("Event with id %d is not found.", id));
+        }
+    }
+
+    private void validateNewEventDate(LocalDateTime time) {
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime minimumAllowedTime = currentTime.plusHours(2);
+
+        if (time.isBefore(minimumAllowedTime)) {
+            throw new ConflictException("Event time cannot be earlier than two hours from the current moment");
+        }
+    }
+
+
+}
