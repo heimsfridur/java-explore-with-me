@@ -4,10 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.EventShortDto;
-import ru.practicum.event.dto.NewEventDto;
-import ru.practicum.event.dto.UpdateEventUserRequest;
+import ru.practicum.event.dto.*;
 import ru.practicum.event.service.PrivateEventService;
 import ru.practicum.request.dto.ParticipationRequestDto;
 
@@ -55,5 +52,13 @@ public class PrivateEventController {
     public List<ParticipationRequestDto> getRequestsToEventByUser(@PathVariable int userId,
                                                                   @PathVariable int eventId) {
         return privateEventService.getRequestsToEventByUser(userId, eventId);
+    }
+
+    @PatchMapping("/{eventId}/requests")
+    @ResponseStatus(HttpStatus.OK)
+    public EventRequestStatusUpdateResult updateRequestStatus(@PathVariable int userId,
+                                                              @PathVariable int eventId,
+                                                              @RequestBody @Valid EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest) {
+        return privateEventService.updateRequestStatus(userId, eventId, eventRequestStatusUpdateRequest);
     }
 }

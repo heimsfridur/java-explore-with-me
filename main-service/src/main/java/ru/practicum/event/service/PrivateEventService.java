@@ -1,9 +1,6 @@
 package ru.practicum.event.service;
 
-import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.EventShortDto;
-import ru.practicum.event.dto.NewEventDto;
-import ru.practicum.event.dto.UpdateEventUserRequest;
+import ru.practicum.event.dto.*;
 import ru.practicum.request.dto.ParticipationRequestDto;
 
 import java.util.List;
@@ -18,4 +15,6 @@ public interface PrivateEventService {
     EventFullDto updateEventByUser(int userId, int eventId, UpdateEventUserRequest updateEventUserRequest);
 
     List<ParticipationRequestDto> getRequestsToEventByUser(int userId, int eventId);
+
+    EventRequestStatusUpdateResult updateRequestStatus(int userId, int eventId, EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest);
 }

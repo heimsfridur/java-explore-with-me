@@ -6,10 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.mapper.CategoryMapper;
-import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.EventShortDto;
-import ru.practicum.event.dto.NewEventDto;
-import ru.practicum.event.dto.UpdateEventUserRequest;
+import ru.practicum.event.dto.*;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.EventState;
@@ -20,9 +17,14 @@ import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.location.dto.LocationDto;
 import ru.practicum.location.mapper.LocationMapper;
 import ru.practicum.request.dto.ParticipationRequestDto;
+import ru.practicum.request.mapper.RequestMapper;
+import ru.practicum.request.model.Request;
+import ru.practicum.request.model.RequestStatus;
+import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -30,6 +32,7 @@ import java.util.List;
 public class PrivateEventServiceImpl implements PrivateEventService {
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
+    private final RequestRepository requestRepository;
 
     @Override
     public List<EventShortDto> getAllByUserId(int userId, int from, int size) {
@@ -64,9 +67,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         validateUserById(userId);
         validateEventById(eventId);
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId);
-        if (!event.getInitiator().getId().equals(userId)){
-            throw new ConflictException(String.format("User with id %d is not initiator of event with id %d", userId, eventId));
-        }
+        validateInitiator(event, userId);
 
         return EventMapper.toEventFullDto(event);
     }
@@ -80,9 +81,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
         Event oldEvent = eventRepository.findById(eventId).get();
 
-        if (!oldEvent.getInitiator().getId().equals(userId)){
-            throw new ConflictException(String.format("User with id %d is not initiator of event with id %d", userId, eventId));
-        }
+        validateInitiator(oldEvent, userId);
 
         if (oldEvent.getState().equals(EventState.PUBLISHED)) {
             throw new ConflictException("Only PENDING or CANCELED events could be updated.");
@@ -150,7 +149,62 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
     @Override
     public List<ParticipationRequestDto> getRequestsToEventByUser(int userId, int eventId) {
+        validateUserById(userId);
+        validateEventById(eventId);
+        Event event = eventRepository.findById(eventId).get();
+        validateInitiator(event, userId);
 
+        List<Request> requests = requestRepository.findAllByRequesterIdAndEventId(userId, eventId);
+        return requests.stream().map(RequestMapper::toParticipationRequestDto).toList();
+    }
+
+    @Override
+    public EventRequestStatusUpdateResult updateRequestStatus(int userId, int eventId, EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest) {
+        validateUserById(userId);
+        validateEventById(eventId);
+
+        Event event = eventRepository.findById(eventId).get();
+        validateInitiator(event, userId);
+
+        int participantsLimit = event.getParticipantLimit();
+
+        if (participantsLimit != 0 && event.getConfirmedRequests() >= event.getParticipantLimit()) {
+            throw new ConflictException("No free spaces for the event.");
+        }
+
+        RequestStatus status = eventRequestStatusUpdateRequest.getStatus();
+
+        List<ParticipationRequestDto> confirmed = new ArrayList<>();
+        List<ParticipationRequestDto> rejected = new ArrayList<>();
+
+
+        List<Request> requests = requestRepository.findAllById(eventRequestStatusUpdateRequest.getRequestIds());
+        requests.forEach(request -> {
+            if (request.getStatus().equals(RequestStatus.PENDING)) {
+                if (participantsLimit == 0) {
+                    request.setStatus(RequestStatus.CONFIRMED);
+                    event.setConfirmedRequests(event.getConfirmedRequests() + 1);
+                } else if (participantsLimit > event.getConfirmedRequests()) {
+                    if (!event.getRequestModeration() || status.equals(RequestStatus.CONFIRMED)) {
+                        request.setStatus(RequestStatus.CONFIRMED);
+                        event.setConfirmedRequests(event.getConfirmedRequests() + 1);
+                        confirmed.add(RequestMapper.toParticipationRequestDto(request));
+                    } else {
+                        request.setStatus(RequestStatus.REJECTED);
+                        rejected.add(RequestMapper.toParticipationRequestDto(request));
+                    }
+                    requestRepository.save(request);
+                }
+            } else {
+                throw new ConflictException("Status could be changed only in PENDING requests.");
+            }
+        });
+        eventRepository.save(event);
+
+        return EventRequestStatusUpdateResult.builder()
+                .confirmedRequests(confirmed)
+                .rejectedRequests(rejected)
+                .build();
     }
 
 
@@ -163,6 +217,12 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     private void validateEventById(int id) {
         if (!eventRepository.existsById(id)) {
             throw new NotFoundException(String.format("Event with id %d is not found.", id));
+        }
+    }
+
+    private void validateInitiator(Event event, int userId) {
+        if (!event.getInitiator().getId().equals(userId)){
+            throw new ConflictException(String.format("User with id %d is not initiator of event with id %d", userId, event.getId()));
         }
     }
 
