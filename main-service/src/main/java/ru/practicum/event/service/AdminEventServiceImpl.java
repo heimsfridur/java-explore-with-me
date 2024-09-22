@@ -23,7 +23,6 @@ import ru.practicum.location.mapper.LocationMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @AllArgsConstructor

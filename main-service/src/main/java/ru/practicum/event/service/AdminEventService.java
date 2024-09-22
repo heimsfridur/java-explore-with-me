@@ -6,7 +6,6 @@ import ru.practicum.event.model.EventState;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 public interface AdminEventService {
     List<EventFullDto> getByFilters(List<Integer> users, List<EventState> states, List<Integer> categories,

@@ -1,6 +1,5 @@
 package ru.practicum.event.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,6 @@ import ru.practicum.event.service.AdminEventService;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @RequiredArgsConstructor
 @RestController

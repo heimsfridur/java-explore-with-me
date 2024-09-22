@@ -221,7 +221,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     }
 
     private void validateInitiator(Event event, int userId) {
-        if (!event.getInitiator().getId().equals(userId)){
+        if (!event.getInitiator().getId().equals(userId)) {
             throw new ConflictException(String.format("User with id %d is not initiator of event with id %d", userId, event.getId()));
         }
     }
