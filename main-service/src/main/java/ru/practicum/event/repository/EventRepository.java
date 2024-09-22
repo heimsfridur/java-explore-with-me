@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.event.model.Event;
 
 import org.springframework.data.domain.Pageable;
+import ru.practicum.event.model.EventState;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,4 +31,12 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     List<Event> findAllWithFilters(String text, Set<Integer> categories, Boolean paid,
                                    LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                    Boolean onlyAvailable, Pageable pageable);
+
+    @Query("SELECT e FROM Event e " +
+            "WHERE (:users IS NULL OR e.initiator.id IN :users) " +
+            "AND (:states IS NULL OR e.state IN :states) " +
+            "AND (:categories IS NULL OR e.category.id IN :categories) " +
+            "AND (e.eventDate >= :rangeStart AND e.eventDate <= :rangeEnd)")
+    List<Event> findAllWithFiltersForAdmin(List<Integer> users, List<EventState> states, List<Integer> categories,
+                                           LocalDateTime rangeStart, LocalDateTime  rangeEnd, Pageable pageable);
 }
