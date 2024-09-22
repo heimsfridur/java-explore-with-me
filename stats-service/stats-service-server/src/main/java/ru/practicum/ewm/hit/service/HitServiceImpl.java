@@ -15,10 +15,12 @@ import java.util.List;
 public class HitServiceImpl implements HitService {
     private final HitRepository hitRepository;
 
+    @Override
     public void add(EndpointHitDto hitDto) {
         hitRepository.save(HitMapper.toHit(hitDto));
     }
 
+    @Override
     public List<ViewStatsDto> get(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
 
         if (unique == null || !unique) {

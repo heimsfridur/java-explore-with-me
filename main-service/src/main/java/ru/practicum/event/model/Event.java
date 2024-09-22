@@ -1,7 +1,6 @@
 package ru.practicum.event.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +19,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Event {
     @Id
-    @NotNull
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
@@ -47,7 +45,7 @@ public class Event {
     @JoinColumn(name = "initiator_id", nullable = false)
     private User initiator;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "location_id")
     private Location location;
 
@@ -70,6 +68,7 @@ public class Event {
     @Column(nullable = false)
     private String title;
 
-    private Integer views;
+    @Transient
+    private Long views;
 
 }

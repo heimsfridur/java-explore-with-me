@@ -1,5 +1,6 @@
 package ru.practicum.user.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,7 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto create(@RequestBody NewUserRequest newUserRequest) {
+    public UserDto create(@RequestBody @Valid NewUserRequest newUserRequest) {
         return userService.create(newUserRequest);
     }
 

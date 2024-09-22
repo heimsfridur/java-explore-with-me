@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.practicum.category.dto.CategoryDto;
-import ru.practicum.category.mapper.CategoryMapper;
+import ru.practicum.category.model.Category;
+import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.event.dto.*;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
@@ -33,6 +33,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
     private final RequestRepository requestRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public List<EventShortDto> getAllByUserId(int userId, int from, int size) {
@@ -55,7 +56,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         Event event = EventMapper.toEventFromNewEventDto(newEventDto);
         event.setCreatedOn(currentTime);
         event.setConfirmedRequests(0);
-        event.setViews(0);
+//        event.setViews(0L);
         event.setInitiator(userRepository.findById(userId).get());
         event.setState(EventState.PENDING);
 
@@ -98,9 +99,10 @@ public class PrivateEventServiceImpl implements PrivateEventService {
             oldEvent.setAnnotation(newAnnotation);
         }
 
-        CategoryDto newCategoryDto = updateEventUserRequest.getCategory();
-        if (newCategoryDto != null) {
-            oldEvent.setCategory(CategoryMapper.toCategoryFromCategoryDto(newCategoryDto));
+        Integer newCategoryDtoId = updateEventUserRequest.getCategory();
+        if (newCategoryDtoId != null) {
+            Category category = categoryRepository.findById(newCategoryDtoId).get();
+            oldEvent.setCategory(category);
         }
 
         String newDescription = updateEventUserRequest.getDescription();
@@ -154,7 +156,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         Event event = eventRepository.findById(eventId).get();
         validateInitiator(event, userId);
 
-        List<Request> requests = requestRepository.findAllByRequesterIdAndEventId(userId, eventId);
+        List<Request> requests = requestRepository.findAllByEventId(eventId);
         return requests.stream().map(RequestMapper::toParticipationRequestDto).toList();
     }
 

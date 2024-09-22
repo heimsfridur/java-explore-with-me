@@ -18,9 +18,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Hit {
     @Id
-    @NotNull
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @NotBlank
     @Column(name = "app")

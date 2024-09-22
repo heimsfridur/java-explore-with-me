@@ -1,15 +1,15 @@
 package ru.practicum.event.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import ru.practicum.event.model.UserEventStateAction;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@EqualsAndHashCode(callSuper = true)
 public class UpdateEventUserRequest extends UpdateEventRequest {
     private UserEventStateAction stateAction;
 }

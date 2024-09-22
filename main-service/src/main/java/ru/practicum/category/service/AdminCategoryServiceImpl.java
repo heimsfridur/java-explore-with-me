@@ -27,7 +27,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     public void delete(int catId) {
         validateById(catId);
 
-        if (!eventRepository.existsByCategoryId(catId)) {
+        if (eventRepository.existsByCategoryId(catId)) {
             throw new ConflictException(String.format("Category with id %d contains events. Impossible to delete it", catId));
         }
 

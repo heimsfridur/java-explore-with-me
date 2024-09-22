@@ -32,6 +32,9 @@ services:
     container_name: ewm-service
     ports:
       - "8080:8080"
+      - "5006:5006"
+    environment:
+      - stats-server.url=http://stats-server:9090
     depends_on:
       - ewm-db
       - stats-server

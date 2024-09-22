@@ -6,8 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.StatsClient;
 import ru.practicum.ViewStatsDto;
-import ru.practicum.category.dto.CategoryDto;
-import ru.practicum.category.mapper.CategoryMapper;
+import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.UpdateEventAdminRequest;
@@ -50,7 +49,7 @@ public class AdminEventServiceImpl implements AdminEventService {
 
         return events.stream()
                 .map(event -> {
-                    Integer views = getViewsNumber(event);
+                    Long views = getViewsNumber(event);
                     event.setViews(views);
                     return EventMapper.toEventFullDto(event);
                 })
@@ -96,9 +95,10 @@ public class AdminEventServiceImpl implements AdminEventService {
             oldEvent.setAnnotation(newAnnotation);
         }
 
-        CategoryDto newCategoryDto = updateEventAdminRequest.getCategory();
-        if (newCategoryDto != null) {
-            oldEvent.setCategory(CategoryMapper.toCategoryFromCategoryDto(newCategoryDto));
+        Integer newCategoryDtoId = updateEventAdminRequest.getCategory();
+        if (newCategoryDtoId != null) {
+            Category category = categoryRepository.findById(newCategoryDtoId).get();
+            oldEvent.setCategory(category);
         }
 
         String newDescription = updateEventAdminRequest.getDescription();
@@ -147,14 +147,14 @@ public class AdminEventServiceImpl implements AdminEventService {
         }
     }
 
-    private int getViewsNumber(Event event) {
+    private Long getViewsNumber(Event event) {
         String eventUri = "/events/" + event.getId();
         LocalDateTime start = event.getPublishedOn() != null ? event.getPublishedOn() : event.getCreatedOn();
         LocalDateTime end = LocalDateTime.now();
 
         List<ViewStatsDto> viewStats = statsClient.get(start, end, List.of(eventUri), true);
         if (viewStats.isEmpty()) {
-            return 0;
+            return 0L;
         }
         return viewStats.get(0).getHits();
     }

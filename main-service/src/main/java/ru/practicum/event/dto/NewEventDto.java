@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.location.dto.LocationDto;
 
 import java.time.LocalDateTime;
@@ -23,9 +23,10 @@ public class NewEventDto {
     private String annotation;
 
     @NotNull(message = "Category is required")
-    private CategoryDto category;
+    private Integer category;
 
     @NotBlank(message = "Description is required")
+    @Size(min = 20, max = 7000, message = "Min length for event description should be 20. Max - 7000.")
     private String description;
 
     @NotNull(message = "Event date is required")
@@ -39,6 +40,7 @@ public class NewEventDto {
     private Boolean paid;
 
     @JsonProperty(defaultValue = "0")
+    @PositiveOrZero(message = "Participants limit should not be negative.")
     private Integer participantLimit;
 
     @JsonProperty(defaultValue = "true")

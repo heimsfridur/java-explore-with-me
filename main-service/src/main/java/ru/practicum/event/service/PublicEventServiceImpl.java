@@ -39,7 +39,7 @@ public class PublicEventServiceImpl implements PublicEventService {
             rangeStart = LocalDateTime.now();
         }
         if (rangeEnd == null) {
-            rangeEnd = LocalDateTime.MAX;
+            rangeEnd = LocalDateTime.now();
         }
         if (text != null) {
             text = text.toLowerCase();
@@ -57,7 +57,7 @@ public class PublicEventServiceImpl implements PublicEventService {
 
         return events.stream()
                 .map(event -> {
-                    Integer views = getViewsNumber(event);
+                    Long views = getViewsNumber(event);
                     event.setViews(views);
                     return EventMapper.toEventShortDto(event);
                 })
@@ -91,14 +91,14 @@ public class PublicEventServiceImpl implements PublicEventService {
         }
     }
 
-    private int getViewsNumber(Event event) {
+    private Long getViewsNumber(Event event) {
         String eventUri = "/events/" + event.getId();
         LocalDateTime start = event.getPublishedOn() != null ? event.getPublishedOn() : event.getCreatedOn();
         LocalDateTime end = LocalDateTime.now();
 
         List<ViewStatsDto> viewStats = statsClient.get(start, end, List.of(eventUri), true);
         if (viewStats.isEmpty()) {
-            return 0;
+            return 0L;
         }
         return viewStats.get(0).getHits();
     }

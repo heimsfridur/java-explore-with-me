@@ -62,5 +62,5 @@ public class EventFullDto {
     @NotBlank(message = "Title is required")
     private String title;
 
-    private Integer views;
+    private Long views;
 }

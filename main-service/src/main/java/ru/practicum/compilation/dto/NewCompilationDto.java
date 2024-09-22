@@ -1,5 +1,6 @@
 package ru.practicum.compilation.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,7 @@ import java.util.Set;
 public class NewCompilationDto {
     private Set<Integer> events;
 
+    @JsonProperty(defaultValue = "false")
     private Boolean pinned;
 
     @NotBlank(message =  "Compilation title should not be blank")

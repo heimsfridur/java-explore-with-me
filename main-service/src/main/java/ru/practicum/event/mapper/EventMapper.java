@@ -1,6 +1,7 @@
 package ru.practicum.event.mapper;
 
 import ru.practicum.category.mapper.CategoryMapper;
+import ru.practicum.category.model.Category;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.location.mapper.LocationMapper;
@@ -26,7 +27,7 @@ public class EventMapper {
     public static Event toEventFromNewEventDto(NewEventDto newEventDto) {
         return Event.builder()
                 .annotation(newEventDto.getAnnotation())
-                .category(CategoryMapper.toCategoryFromCategoryDto(newEventDto.getCategory()))
+                .category(Category.builder().id(newEventDto.getCategory()).build())
                 .description(newEventDto.getDescription())
                 .eventDate(newEventDto.getEventDate())
                 .location(LocationMapper.toLocation(newEventDto.getLocation()))
@@ -52,6 +53,7 @@ public class EventMapper {
                 .participantLimit(event.getParticipantLimit())
                 .publishedOn(event.getPublishedOn())
                 .state(event.getState())
+                .requestModeration(event.getRequestModeration())
                 .title(event.getTitle())
                 .views(event.getViews())
                 .build();
