@@ -14,6 +14,7 @@ import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.EventState;
 import ru.practicum.event.repository.EventRepository;
+import ru.practicum.exceptions.BadRequestException;
 import ru.practicum.exceptions.NotFoundException;
 
 import java.time.LocalDateTime;
@@ -33,16 +34,15 @@ public class PublicEventServiceImpl implements PublicEventService {
                                               Boolean paid, LocalDateTime rangeStart,
                                               LocalDateTime rangeEnd, Boolean onlyAvailable,
                                               String sort, int from, int size) {
-        categories.stream().forEach(categoryId -> validateCategoryById(categoryId));
+        if (categories != null) {
+            categories.stream().forEach(categoryId -> validateCategoryById(categoryId));
+        }
 
         if (rangeStart == null) {
-            rangeStart = LocalDateTime.now();
+            rangeStart = LocalDateTime.of(1900, 1, 1, 0, 0);
         }
         if (rangeEnd == null) {
-            rangeEnd = LocalDateTime.now();
-        }
-        if (text != null) {
-            text = text.toLowerCase();
+            rangeEnd = LocalDateTime.of(3000, 1, 1, 0, 0);
         }
 
         Sort sortCriteria = Sort.by(Sort.Direction.ASC, "eventDate");
@@ -52,8 +52,16 @@ public class PublicEventServiceImpl implements PublicEventService {
 
         Pageable pageable = PageRequest.of(from / size, size, sortCriteria);
 
-        List<Event> events = eventRepository.findAllWithFilters(text, categories, paid,
-                rangeStart, rangeEnd, onlyAvailable, pageable);
+        List<Event> events;
+
+        if (text == null || text.isEmpty()) {
+            events = eventRepository.findAllWithFiltersNullText(categories, paid,
+                    rangeStart, rangeEnd, onlyAvailable, pageable);
+        } else {
+            events = eventRepository.findAllWithFilters(text, categories, paid,
+                    rangeStart, rangeEnd, onlyAvailable, pageable);
+        }
+
 
         return events.stream()
                 .map(event -> {
@@ -81,7 +89,7 @@ public class PublicEventServiceImpl implements PublicEventService {
 
     private void validateCategoryById(int id) {
         if (!categoryRepository.existsById(id)) {
-            throw new NotFoundException(String.format("Category with id %d is not found.", id));
+            throw new BadRequestException(String.format("Category with id %d is not found.", id));
         }
     }
 

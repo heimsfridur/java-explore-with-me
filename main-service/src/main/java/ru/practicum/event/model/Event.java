@@ -22,7 +22,7 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false)
+    @Column(name = "annotation", nullable = false)
     private String annotation;
 
     @ManyToOne
@@ -65,7 +65,7 @@ public class Event {
     @Column(nullable = false)
     private EventState state;
 
-    @Column(nullable = false)
+    @Column(name = "title", nullable = false)
     private String title;
 
     @Transient

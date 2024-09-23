@@ -17,9 +17,23 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleNotUniqueException(final NotUniqueException e) {
+        log.debug("Not unique exception. Received status 400 CONFLICT {}.", e.getMessage(), e);
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundException(final NotFoundException e) {
         log.debug("Received status 404 NOT FOUND {}", e.getMessage(), e);
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadRequestException(final BadRequestException e) {
+        log.debug("Received status 400 BAD REQUEST {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 }

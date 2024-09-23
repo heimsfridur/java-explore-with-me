@@ -18,7 +18,8 @@ public class NewCompilationDto {
     private Set<Integer> events;
 
     @JsonProperty(defaultValue = "false")
-    private Boolean pinned;
+    @Builder.Default
+    private Boolean pinned = false;
 
     @NotBlank(message =  "Compilation title should not be blank")
     @Size(min = 1, max = 50, message = "Min length for compilation title should be 1. Max - 50")

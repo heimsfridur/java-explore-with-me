@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 @Builder
 public class NewEventDto {
     @NotBlank(message = "Annotation is required")
+    @Size(min = 20, max = 2000, message = "Min length for event annotation should be 20. Max - 2000.")
     private String annotation;
 
     @NotNull(message = "Category is required")
@@ -37,14 +38,17 @@ public class NewEventDto {
     private LocationDto location;
 
     @JsonProperty(defaultValue = "false")
-    private Boolean paid;
+    @Builder.Default
+    private Boolean paid = false;
 
     @JsonProperty(defaultValue = "0")
+    @Builder.Default
     @PositiveOrZero(message = "Participants limit should not be negative.")
-    private Integer participantLimit;
+    private Integer participantLimit = 0;
 
     @JsonProperty(defaultValue = "true")
-    private Boolean requestModeration;
+    @Builder.Default
+    private Boolean requestModeration = true;
 
     @NotBlank(message = "Title is required")
     @Size(min = 3, max = 120, message = "Min length for event title should be 3. Max - 120")

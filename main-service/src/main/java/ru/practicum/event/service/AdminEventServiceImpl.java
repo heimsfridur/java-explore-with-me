@@ -15,6 +15,7 @@ import ru.practicum.event.model.AdminEventStateAction;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.EventState;
 import ru.practicum.event.repository.EventRepository;
+import ru.practicum.exceptions.BadRequestException;
 import ru.practicum.exceptions.ConflictException;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.location.dto.LocationDto;
@@ -33,13 +34,16 @@ public class AdminEventServiceImpl implements AdminEventService {
     @Override
     public List<EventFullDto> getByFilters(List<Integer> users, List<EventState> states, List<Integer> categories,
                               LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
-        categories.stream().forEach(categoryId -> validateCategoryById(categoryId));
+
+        if (categories != null) {
+            categories.stream().forEach(categoryId -> validateCategoryById(categoryId));
+        }
 
         if (rangeStart == null) {
-            rangeStart = LocalDateTime.now();
+            rangeStart = LocalDateTime.of(1900, 1, 1, 0, 0);
         }
         if (rangeEnd == null) {
-            rangeEnd = LocalDateTime.MAX;
+            rangeEnd = LocalDateTime.of(3000, 1, 1, 0, 0);
         }
 
         Pageable pageable = PageRequest.of(from / size, size);
@@ -85,7 +89,7 @@ public class AdminEventServiceImpl implements AdminEventService {
         LocalDateTime newEventDate = updateEventAdminRequest.getEventDate();
         if (newEventDate != null) {
             if (updateEventAdminRequest.getEventDate().isBefore(LocalDateTime.now().plusHours(1))) {
-                throw new ConflictException("Updated event time cannot be earlier than hour from the current moment");
+                throw new BadRequestException("Updated event time cannot be earlier than hour from the current moment");
             }
             oldEvent.setEventDate(newEventDate);
         }
@@ -137,7 +141,7 @@ public class AdminEventServiceImpl implements AdminEventService {
 
     private void validateCategoryById(int id) {
         if (!categoryRepository.existsById(id)) {
-            throw new NotFoundException(String.format("Category with id %d is not found.", id));
+            throw new BadRequestException(String.format("Category with id %d is not found.", id));
         }
     }
 

@@ -10,6 +10,7 @@ import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exceptions.ConflictException;
 import ru.practicum.exceptions.NotFoundException;
+import ru.practicum.exceptions.NotUniqueException;
 
 @AllArgsConstructor
 @Service
@@ -19,6 +20,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
     @Override
     public CategoryDto create(NewCategoryDto newCategoryDto) {
+        validateCategoryName(newCategoryDto.getName());
         Category savedCategory = categoryRepository.save(CategoryMapper.toCategoryFromNewCategoryDto(newCategoryDto));
         return CategoryMapper.toCategoryDto(savedCategory);
     }
@@ -37,8 +39,14 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     @Override
     public CategoryDto update(CategoryDto categoryDto, int catId) {
         validateById(catId);
+
         Category category = categoryRepository.findById(catId).get();
-        category.setName(categoryDto.getName());
+
+        String newName = categoryDto.getName();
+        if (!category.getName().equals(newName)) {
+            validateCategoryName(newName);
+            category.setName(categoryDto.getName());
+        }
 
         return CategoryMapper.toCategoryDto(categoryRepository.save(category));
     }
@@ -49,5 +57,10 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         }
     }
 
+    private void validateCategoryName(String name) {
+        if (categoryRepository.existsByName(name)) {
+            throw new NotUniqueException("Category name is not unique.");
+        }
+    }
 
 }

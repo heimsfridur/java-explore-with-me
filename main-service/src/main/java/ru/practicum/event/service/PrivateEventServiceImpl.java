@@ -12,6 +12,7 @@ import ru.practicum.event.model.Event;
 import ru.practicum.event.model.EventState;
 import ru.practicum.event.model.UserEventStateAction;
 import ru.practicum.event.repository.EventRepository;
+import ru.practicum.exceptions.BadRequestException;
 import ru.practicum.exceptions.ConflictException;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.location.dto.LocationDto;
@@ -233,7 +234,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         LocalDateTime minimumAllowedTime = currentTime.plusHours(2);
 
         if (time.isBefore(minimumAllowedTime)) {
-            throw new ConflictException("Event time cannot be earlier than two hours from the current moment");
+            throw new BadRequestException("Event time cannot be earlier than two hours from the current moment");
         }
     }
 

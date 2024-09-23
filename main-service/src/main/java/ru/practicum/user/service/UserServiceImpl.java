@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.exceptions.NotFoundException;
+import ru.practicum.exceptions.NotUniqueException;
 import ru.practicum.user.dto.NewUserRequest;
 import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.mapper.UserMapper;
@@ -20,6 +21,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto create(NewUserRequest newUserRequest) {
+        if (userRepository.existsByEmail(newUserRequest.getEmail())) {
+            throw new NotUniqueException("Email is not unique.");
+        }
         User savedUser = userRepository.save(UserMapper.toUser(newUserRequest));
         return UserMapper.toUserDto(savedUser);
     }

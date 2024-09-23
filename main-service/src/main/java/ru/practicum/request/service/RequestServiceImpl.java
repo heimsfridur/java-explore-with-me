@@ -40,7 +40,7 @@ public class RequestServiceImpl implements RequestService {
         User user = userRepository.findById(userId).get();
         Event event = eventRepository.findById(eventId).get();
 
-        if (event.getInitiator().equals(userId)) {
+        if (event.getInitiator().getId().equals(userId)) {
             throw new ConflictException("Impossible to add request for the event user made.");
         }
 
@@ -52,7 +52,7 @@ public class RequestServiceImpl implements RequestService {
             throw new ConflictException(String.format("User with id %d is already participating in event with id %d.", userId, eventId));
         }
 
-        if (event.getConfirmedRequests() > event.getParticipantLimit()) {
+        if (event.getParticipantLimit() != 0 && event.getConfirmedRequests() >= event.getParticipantLimit()) {
             throw new ConflictException("No free spaces in event.");
         }
 
