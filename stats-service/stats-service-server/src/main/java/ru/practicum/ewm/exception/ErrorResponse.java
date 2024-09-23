@@ -1,4 +1,4 @@
-package ru.practicum.exceptions;
+package ru.practicum.ewm.exception;
 
 import lombok.Data;
 
@@ -9,5 +9,4 @@ public class ErrorResponse {
     public ErrorResponse(String error) {
         this.error = error;
     }
-
 }

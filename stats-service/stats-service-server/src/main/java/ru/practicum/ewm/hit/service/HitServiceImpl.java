@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.EndpointHitDto;
 import ru.practicum.ViewStatsDto;
+import ru.practicum.ewm.exception.BadTimeException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +23,10 @@ public class HitServiceImpl implements HitService {
 
     @Override
     public List<ViewStatsDto> get(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+
+        if (start.isAfter(end)) {
+            throw new BadTimeException("Start time can not be after end time.");
+        }
 
         if (unique == null || !unique) {
             if (uris == null || uris.isEmpty()) {
