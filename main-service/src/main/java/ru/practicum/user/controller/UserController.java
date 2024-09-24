@@ -25,7 +25,6 @@ public class UserController {
     }
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     public List<UserDto> get(@RequestParam(required = false) List<Integer> ids,
                        @RequestParam(defaultValue = "0") int from,
                        @RequestParam(defaultValue = "10") int size) {

@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.UpdateEventAdminRequest;
@@ -22,7 +21,6 @@ public class AdminEventController {
     private final String pattern = "yyyy-MM-dd HH:mm:ss";
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     public List<EventFullDto> getByFilters(@RequestParam(required = false) List<Integer> users,
                                      @RequestParam(required = false) List<EventState> states,
                                      @RequestParam(required = false) List<Integer> categories,
@@ -34,7 +32,6 @@ public class AdminEventController {
     }
 
     @PatchMapping("/{eventId}")
-    @ResponseStatus(HttpStatus.OK)
     public EventFullDto update(@PathVariable int eventId,
                                @RequestBody @Valid UpdateEventAdminRequest updateEventAdminRequest) {
         return adminEventService.update(eventId, updateEventAdminRequest);

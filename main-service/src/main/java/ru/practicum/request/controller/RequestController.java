@@ -15,7 +15,6 @@ public class RequestController {
     private final RequestService requestService;
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     public List<ParticipationRequestDto> getRequestsForUser(@PathVariable int userId) {
         return requestService.getRequestsForUser(userId);
     }
@@ -28,7 +27,6 @@ public class RequestController {
     }
 
     @PatchMapping("/{requestId}/cancel")
-    @ResponseStatus(HttpStatus.OK)
     public ParticipationRequestDto cancel(@PathVariable int userId,
                                           @PathVariable int requestId) {
         return requestService.cancel(userId, requestId);

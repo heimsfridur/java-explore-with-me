@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.EndpointHitDto;
 import ru.practicum.StatsClient;
@@ -25,7 +24,6 @@ public class PublicEventController {
     private final StatsClient statsClient;
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     public List<EventShortDto> getWithFilters(@RequestParam(required = false) String text,
                                               @RequestParam(required = false) Set<Integer> categories,
                                               @RequestParam(required = false) Boolean paid,
@@ -45,7 +43,6 @@ public class PublicEventController {
     }
 
     @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
     public EventFullDto getEvent(@PathVariable int id, HttpServletRequest request) {
         EventFullDto event = publicEventService.getEvent(id);
         saveStats(request);
