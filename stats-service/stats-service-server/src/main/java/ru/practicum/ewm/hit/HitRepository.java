@@ -12,10 +12,10 @@ import java.util.List;
 @Repository
 public interface HitRepository extends JpaRepository<Hit, Integer> {
 
-    @Query("select new ru.practicum.ViewStatsDto(hit.ip, hit.uri, count(hit.ip)) " +
+    @Query("select new ru.practicum.ViewStatsDto(hit.app, hit.uri, count(hit.ip)) " +
             "from Hit as hit " +
             "where hit.timestamp between :start and :end " +
-            "group by hit.ip, hit.uri " +
+            "group by hit.app, hit.uri " +
             "order by count(hit.ip) desc ")
     List<ViewStatsDto> findAllByTimestampBetween(@Param("start") LocalDateTime start,
                                                  @Param("end") LocalDateTime end);
