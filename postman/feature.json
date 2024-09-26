@@ -301,7 +301,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"annotation\":\"test annotation, a loooooooooooooooooooong annotation\",\r\n    \"category\":1,\r\n    \"description\":\"test description, a loooooooong description\",\r\n    \"eventDate\":\"2029-08-01 00:13:15\",\r\n    \"location\": {\r\n        \"lat\":-2.5,\r\n        \"lon\":87.4\r\n        },\r\n    \"paid\":\"true\",\r\n    \"participantLimit\":\"50\",\r\n    \"requestModeration\":\"false\",\r\n    \"title\":\"test title.\"\r\n}",
+					"raw": "{\r\n    \"annotation\":\"test annotation, a loooooooooooooooooooong annotation\",\r\n    \"category\":122,\r\n    \"description\":\"test description, a loooooooong description\",\r\n    \"eventDate\":\"2029-08-01 00:13:15\",\r\n    \"location\": {\r\n        \"lat\":-2.5,\r\n        \"lon\":87.4\r\n        },\r\n    \"paid\":\"true\",\r\n    \"participantLimit\":\"50\",\r\n    \"requestModeration\":\"false\",\r\n    \"title\":\"test title.\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -360,7 +360,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/events/:eventId/comments?userId=2",
+					"raw": "http://localhost:8080/events/:eventId/comments?userId=138",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -374,13 +374,13 @@
 					"query": [
 						{
 							"key": "userId",
-							"value": "2"
+							"value": "138"
 						}
 					],
 					"variable": [
 						{
 							"key": "eventId",
-							"value": "1"
+							"value": "107"
 						}
 					]
 				}
@@ -432,7 +432,7 @@
 					"variable": [
 						{
 							"key": "eventId",
-							"value": "1"
+							"value": "107"
 						}
 					]
 				}
@@ -480,7 +480,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/events/:eventId/comments?userId=2",
+					"raw": "http://localhost:8080/events/:eventId/comments?userId=138",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -494,13 +494,13 @@
 					"query": [
 						{
 							"key": "userId",
-							"value": "2"
+							"value": "138"
 						}
 					],
 					"variable": [
 						{
 							"key": "eventId",
-							"value": "1"
+							"value": "107"
 						}
 					]
 				}
@@ -548,7 +548,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/events/:eventId/comments?userId=3",
+					"raw": "http://localhost:8080/events/:eventId/comments?userId=139",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -562,13 +562,13 @@
 					"query": [
 						{
 							"key": "userId",
-							"value": "3"
+							"value": "139"
 						}
 					],
 					"variable": [
 						{
 							"key": "eventId",
-							"value": "1"
+							"value": "107"
 						}
 					]
 				}
@@ -621,7 +621,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/events/:eventId/comments/:commentId?userId=2",
+					"raw": "http://localhost:8080/events/:eventId/comments/:commentId?userId=138",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -636,13 +636,13 @@
 					"query": [
 						{
 							"key": "userId",
-							"value": "2"
+							"value": "138"
 						}
 					],
 					"variable": [
 						{
 							"key": "eventId",
-							"value": "1"
+							"value": "107"
 						},
 						{
 							"key": "commentId",
@@ -696,7 +696,7 @@
 					"variable": [
 						{
 							"key": "eventId",
-							"value": "1"
+							"value": "107"
 						}
 					]
 				}
