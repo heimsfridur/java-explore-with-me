@@ -25,10 +25,8 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
 
     @Override
     public CommentDto create(int eventId, int userId, CommentDto commentDto) {
-        validateUserById(userId);
-        validateEventById(eventId);
-        Event event = eventRepository.findById(eventId).get();
-        User user = userRepository.findById(userId).get();
+        Event event = getEventById(eventId);
+        User user = getUserById(userId);
 
         if (!event.getState().equals(EventState.PUBLISHED)) {
             throw new ConflictException("It is impossible to comment unpublished event.");
@@ -45,11 +43,10 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
 
     @Override
     public CommentDto update(int eventId, int commentId, int userId, CommentDto commentDto) {
-        validateCommentById(commentId);
         validateEventById(eventId);
         validateUserById(userId);
 
-        Comment oldComment = commentRepository.findById(commentId).get();
+        Comment oldComment = getCommentById(commentId);
 
         checkIfUserIsAuthor(oldComment, userId);
 
@@ -62,19 +59,17 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
 
     @Override
     public void delete(int eventId, int commentId, int userId) {
-        validateCommentById(commentId);
         validateUserById(userId);
-        Comment comment = commentRepository.findById(commentId).get();
+
+        Comment comment = getCommentById(commentId);
         checkIfUserIsAuthor(comment, userId);
 
         commentRepository.deleteById(commentId);
     }
 
-
-    private void validateCommentById(int id) {
-        if (!commentRepository.existsById(id)) {
-            throw new NotFoundException(String.format("Comment with id %d is not found.", id));
-        }
+    private Comment getCommentById(int id) {
+        return commentRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Comment with id %d is not found.", id)));
     }
 
     private void validateUserById(int id) {
@@ -83,10 +78,20 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
         }
     }
 
+    private User getUserById(int id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("User with id %d is not found.", id)));
+    }
+
     private void validateEventById(int id) {
         if (!eventRepository.existsById(id)) {
             throw new NotFoundException(String.format("Event with id %d is not found.", id));
         }
+    }
+
+    private Event getEventById(int id) {
+        return eventRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Event with id %d is not found.", id)));
     }
 
     private void checkIfUserIsAuthor(Comment comment, int userId) {

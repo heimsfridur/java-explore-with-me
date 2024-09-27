@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.event.dto.*;
 import ru.practicum.event.mapper.EventMapper;
@@ -15,8 +14,6 @@ import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exceptions.BadRequestException;
 import ru.practicum.exceptions.ConflictException;
 import ru.practicum.exceptions.NotFoundException;
-import ru.practicum.location.dto.LocationDto;
-import ru.practicum.location.mapper.LocationMapper;
 import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.request.mapper.RequestMapper;
 import ru.practicum.request.model.Request;
@@ -57,7 +54,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         Event event = EventMapper.toEventFromNewEventDto(newEventDto);
         event.setCreatedOn(currentTime);
         event.setConfirmedRequests(0);
-//        event.setViews(0L);
         event.setInitiator(userRepository.findById(userId).get());
         event.setState(EventState.PENDING);
 
@@ -67,8 +63,9 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     @Override
     public EventFullDto getByIdByInitiator(int userId, int eventId) {
         validateUserById(userId);
-        validateEventById(eventId);
-        Event event = eventRepository.findByIdAndInitiatorId(eventId, userId);
+
+        Event event = EventUtils.getEventById(eventId, eventRepository);
+
         validateInitiator(event, userId);
 
         return EventMapper.toEventFullDto(event);
@@ -79,9 +76,9 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         LocalDateTime currentTime = LocalDateTime.now();
 
         validateUserById(userId);
-        validateEventById(eventId);
 
-        Event oldEvent = eventRepository.findById(eventId).get();
+        Event oldEvent = EventUtils.getEventById(eventId, eventRepository);
+
 
         validateInitiator(oldEvent, userId);
 
@@ -89,52 +86,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
             throw new ConflictException("Only PENDING or CANCELED events could be updated.");
         }
 
-        LocalDateTime newEventDate = updateEventUserRequest.getEventDate();
-        if (newEventDate != null) {
-            validateNewEventDate(newEventDate);
-            oldEvent.setEventDate(newEventDate);
-        }
-
-        String newAnnotation = updateEventUserRequest.getAnnotation();
-        if (newAnnotation != null) {
-            oldEvent.setAnnotation(newAnnotation);
-        }
-
-        Integer newCategoryDtoId = updateEventUserRequest.getCategory();
-        if (newCategoryDtoId != null) {
-            Category category = categoryRepository.findById(newCategoryDtoId).get();
-            oldEvent.setCategory(category);
-        }
-
-        String newDescription = updateEventUserRequest.getDescription();
-        if (newDescription != null) {
-            oldEvent.setDescription(newDescription);
-        }
-
-        LocationDto newLocation = updateEventUserRequest.getLocation();
-        if (newLocation != null) {
-            oldEvent.setLocation(LocationMapper.toLocation(newLocation));
-        }
-
-        Boolean newPaid = updateEventUserRequest.getPaid();
-        if (newPaid != null) {
-            oldEvent.setPaid(newPaid);
-        }
-
-        Integer newParticipantLimit = updateEventUserRequest.getParticipantLimit();
-        if (newParticipantLimit != null) {
-            oldEvent.setParticipantLimit(newParticipantLimit);
-        }
-
-        Boolean newRequestModeration = updateEventUserRequest.getRequestModeration();
-        if (newRequestModeration != null) {
-            oldEvent.setRequestModeration(newRequestModeration);
-        }
-
-        String newTitle = updateEventUserRequest.getTitle();
-        if (newTitle != null) {
-            oldEvent.setTitle(newTitle);
-        }
 
         UserEventStateAction newStateAction = updateEventUserRequest.getStateAction();
         if (newStateAction != null) {
@@ -145,6 +96,8 @@ public class PrivateEventServiceImpl implements PrivateEventService {
             }
         }
 
+        EventUtils.updateEventFields(oldEvent, updateEventUserRequest, categoryRepository, 2);
+
         return EventMapper.toEventFullDto(eventRepository.save(oldEvent));
 
 
@@ -153,8 +106,9 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     @Override
     public List<ParticipationRequestDto> getRequestsToEventByUser(int userId, int eventId) {
         validateUserById(userId);
-        validateEventById(eventId);
-        Event event = eventRepository.findById(eventId).get();
+
+        Event event = EventUtils.getEventById(eventId, eventRepository);
+
         validateInitiator(event, userId);
 
         List<Request> requests = requestRepository.findAllByEventId(eventId);
@@ -164,9 +118,9 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     @Override
     public EventRequestStatusUpdateResult updateRequestStatus(int userId, int eventId, EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest) {
         validateUserById(userId);
-        validateEventById(eventId);
 
-        Event event = eventRepository.findById(eventId).get();
+        Event event = EventUtils.getEventById(eventId, eventRepository);
+
         validateInitiator(event, userId);
 
         int participantsLimit = event.getParticipantLimit();
@@ -214,12 +168,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     private void validateUserById(int id) {
         if (!userRepository.existsById(id)) {
             throw new NotFoundException(String.format("User with id %d is not found.", id));
-        }
-    }
-
-    private void validateEventById(int id) {
-        if (!eventRepository.existsById(id)) {
-            throw new NotFoundException(String.format("Event with id %d is not found.", id));
         }
     }
 

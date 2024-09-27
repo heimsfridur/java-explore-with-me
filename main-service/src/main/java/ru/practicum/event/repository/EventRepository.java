@@ -10,7 +10,6 @@ import ru.practicum.event.model.EventState;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Integer> {
@@ -28,7 +27,7 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "AND (e.eventDate BETWEEN :rangeStart AND :rangeEnd) " +
             "AND (:onlyAvailable = FALSE OR e.confirmedRequests < e.participantLimit) " +
             "AND e.state = 'PUBLISHED'")
-    List<Event> findAllWithFilters(String text, Set<Integer> categories, Boolean paid,
+    List<Event> findAllWithFilters(String text, List<Integer> categories, Boolean paid,
                                    LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                    Boolean onlyAvailable, Pageable pageable);
 
@@ -38,7 +37,7 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "AND (e.eventDate BETWEEN :rangeStart AND :rangeEnd) " +
             "AND (:onlyAvailable = FALSE OR e.confirmedRequests < e.participantLimit) " +
             "AND e.state = 'PUBLISHED'")
-    List<Event> findAllWithFiltersNullText(Set<Integer> categories, Boolean paid,
+    List<Event> findAllWithFiltersNullText(List<Integer> categories, Boolean paid,
                                    LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                    Boolean onlyAvailable, Pageable pageable);
 

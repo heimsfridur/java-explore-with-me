@@ -13,7 +13,6 @@ import ru.practicum.event.service.PublicEventService;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @RequiredArgsConstructor
 @RestController
@@ -25,7 +24,7 @@ public class PublicEventController {
 
     @GetMapping
     public List<EventShortDto> getWithFilters(@RequestParam(required = false) String text,
-                                              @RequestParam(required = false) Set<Integer> categories,
+                                              @RequestParam(required = false) List<Integer> categories,
                                               @RequestParam(required = false) Boolean paid,
                                               @RequestParam(required = false) @DateTimeFormat(pattern = pattern) LocalDateTime rangeStart,
                                               @RequestParam(required = false) @DateTimeFormat(pattern = pattern) LocalDateTime rangeEnd,

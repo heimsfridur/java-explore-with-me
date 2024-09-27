@@ -38,9 +38,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
     @Override
     public CategoryDto update(CategoryDto categoryDto, int catId) {
-        validateById(catId);
-
-        Category category = categoryRepository.findById(catId).get();
+        Category category = getCategoryById(catId);
 
         String newName = categoryDto.getName();
         if (!category.getName().equals(newName)) {
@@ -55,6 +53,11 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         if (!categoryRepository.existsById(id)) {
             throw new NotFoundException(String.format("Category with id %d is not found.", id));
         }
+    }
+
+    private Category getCategoryById(int id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Category with id %d is not found.", id)));
     }
 
     private void validateCategoryName(String name) {

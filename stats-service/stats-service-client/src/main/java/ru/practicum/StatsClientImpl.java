@@ -15,24 +15,11 @@ public class StatsClientImpl implements StatsClient {
     private final WebClient webClient;
     private static final String pattern = "yyyy-MM-dd HH:mm:ss";
 
-//    @Value("${stats-server.url}")
-//    private String statsServerUrl;
-
-
     @Autowired
     public StatsClientImpl(WebClient.Builder webClientBuilder,
                            @Value("${stats-server.url}") String statsServerUrl) {
         webClient = webClientBuilder.baseUrl(statsServerUrl).build();
     }
-
-//    private WebClient getWebClient() {
-//        if (webClient == null) {
-//            webClient = WebClient.builder()
-//                    .baseUrl(statsServerUrl)
-//                    .build();
-//        }
-//        return webClient;
-//    }
 
     @Override
     public void addHit(EndpointHitDto hitDto) {
