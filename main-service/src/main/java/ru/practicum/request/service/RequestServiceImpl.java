@@ -34,11 +34,8 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public ParticipationRequestDto create(int userId, int eventId) {
-        validateUserById(userId);
-        validateEventById(eventId);
-
-        User user = userRepository.findById(userId).get();
-        Event event = eventRepository.findById(eventId).get();
+        User user = getUserById(userId);
+        Event event = getEventById(eventId);
 
         if (event.getInitiator().getId().equals(userId)) {
             throw new ConflictException("Impossible to add request for the event user made.");
@@ -79,8 +76,8 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public ParticipationRequestDto cancel(int userId, int requestId) {
         validateUserById(userId);
-        validateRequestById(requestId);
-        Request request = requestRepository.findById(requestId).get();
+
+        Request request = getRequestById(requestId);
         request.setStatus(RequestStatus.CANCELED);
         return RequestMapper.toParticipationRequestDto(requestRepository.save(request));
     }
@@ -91,15 +88,18 @@ public class RequestServiceImpl implements RequestService {
         }
     }
 
-    private void validateEventById(int id) {
-        if (!eventRepository.existsById(id)) {
-            throw new NotFoundException(String.format("Event with id %d is not found.", id));
-        }
+    private User getUserById(int id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("User with id %d is not found.", id)));
     }
 
-    private void validateRequestById(int id) {
-        if (!requestRepository.existsById(id)) {
-            throw new NotFoundException(String.format("Request with id %d is not found.", id));
-        }
+    private Event getEventById(int id) {
+        return eventRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Event with id %d is not found.", id)));
+    }
+
+    private Request getRequestById(int id) {
+        return requestRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Request with id %d is not found.", id)));
     }
 }

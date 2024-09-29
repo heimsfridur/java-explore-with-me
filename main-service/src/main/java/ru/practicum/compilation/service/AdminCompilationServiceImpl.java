@@ -47,8 +47,7 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
 
     @Override
     public CompilationDto update(int compId, UpdateCompilationRequest updateCompilationRequest) {
-        validateCompilationById(compId);
-        Compilation oldCompilation = compilationRepository.findById(compId).get();
+        Compilation oldCompilation = getCompilationById(compId);
 
         Boolean newPinned = updateCompilationRequest.getPinned();
         if (newPinned != null) {
@@ -72,6 +71,11 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
         if (!compilationRepository.existsById(id)) {
             throw new NotFoundException(String.format("Compilation with id %d is not found.", id));
         }
+    }
+
+    private Compilation getCompilationById(int id) {
+        return compilationRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Compilation with id %d is not found.", id)));
     }
 
 }
